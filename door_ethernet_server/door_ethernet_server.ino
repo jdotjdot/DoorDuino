@@ -16,7 +16,7 @@
  */
  
 // What needs to be added:
-// need to parse the hash
+// need to finish parsing the hash (getting weird output)
 // need to implement the request counter (9 digits), if arduino restarts, allow higher counter
     // from server to up the count b/c arduino will reset to 0
 // need to add crypto library https://github.com/Cathedrow/Cryptosuite to do the parsing
