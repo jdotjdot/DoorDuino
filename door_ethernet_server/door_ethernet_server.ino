@@ -92,6 +92,7 @@ struct clientInput parseClientInput(String command) {
 
   command.substring(16, 80).toCharArray(holder.hash, 65);
   Serial.println(holder.hash);
+  Serial.println(String("Available memory: ") + availableMemory());
   return holder;
  
  //check the time 
@@ -126,7 +127,15 @@ void loop() {
         
         clientMsg += thisChar;
         
-        if (thisChar == '\n' && currentLineIsBlank) {
+        // flush buffer if goes above 100
+        if (clientMsg.length() >= 100) {
+          clientMsg = "";
+          client.flush();
+          
+          client.println("HTTP/1.1 418 I'm a teapot");
+        }
+        
+        if (clientMsg.endsWith("HTTP")) {
           
           Serial.println("Message from client: ");
           Serial.println(clientMsg);
@@ -134,12 +143,17 @@ void loop() {
           struct clientInput parsedInput = parseClientInput(clientMsg);
           
           clientMsg = "";
+          client.flush();
           
           // Check valid time
           if (parsedInput.time <= currentTime) {
+            // Invalid time
             Serial.println(String("client time ") + parsedInput.time +
                            " <= currentTime " + currentTime);
-            client.println("Invalid time");
+            
+            client.println("HTTP/1.1 400 Bad Request");
+            client.println(String("Next-nounce: ") + (currentTime + 1));
+            
             client.stop();
             break;
           } else {
@@ -152,6 +166,8 @@ void loop() {
             Sha256.init();
             Sha256.print(parsedInput.time_s + password);
             hash = Sha256.result(); 
+            
+            char hash_c[65];
            
             // convert from uint8_t to HEX str 
             String tmpHash;
@@ -164,21 +180,24 @@ void loop() {
               }
               hash_s += tmpHash;
             }
+            hash_s.toCharArray(hash_c, 65);
 
               
-            Serial.println(String("calculated hash: ") + hash_s);
-            Serial.println(String("parsedInput: ") + parsedInput.hash_s);
-            Serial.println(String("Comparison: ") + hash_s + " and " + String(parsedInput.hash_s));
+//            Serial.println(String("calculated hash: ") + hash_c);
+//            Serial.println(String("parsedInput: ") + parsedInput.hash);
+//            Serial.println(String("Comparison: ") + hash_s + " and " + String(parsedInput.hash));
 
-            if (hash_s.equalsIgnoreCase(parsedInput.hash_s)) {
+            if (strcmp(parsedInput.hash, hash_c) == 0) {
             
               // open door
               asyncOpenDoor = true;
+              client.println("HTTP/1.1 200 OK");
               Serial.println("Commanded door to open");
               
             } else {
               
               // don't open door
+              client.println("HTTP/1.1 401 Unauthorized");
               Serial.println("Invalid hash; door not opened");
 
             
@@ -186,18 +205,20 @@ void loop() {
         
           }
           
-          client.println(String("Received: Time=") + parsedInput.time_s + 
-                          String(" | Hash: ") + parsedInput.hash_s);
+          
+          client.println("Connection: close");
+//          client.println(String("Received: Time=") + parsedInput.time_s + 
+//                          String(" | Hash: ") + parsedInput.hash_s);
           client.stop();
           break;
         }
         
         
-        if (thisChar == '\n') {
-          currentLineIsBlank = true;
-        } else if (thisChar != '\r') {
-          currentLineIsBlank = false;
-        }
+//        if (thisChar == '\n') {
+//          currentLineIsBlank = true;
+//        } else if (thisChar != '\r') {
+//          currentLineIsBlank = false;
+//        }
       }
     }
     // give the web browser time to receive the data
@@ -207,5 +228,18 @@ void loop() {
     Serial.println("client disconnected");
   }
 }
+
+int availableMemory() {
+  int size = 1024; // Use 2048 with ATmega328
+  byte *buf;
+
+  while ((buf = (byte *) malloc(--size)) == NULL)
+    ;
+
+  free(buf);
+
+  return size;
+}
+
 
 
