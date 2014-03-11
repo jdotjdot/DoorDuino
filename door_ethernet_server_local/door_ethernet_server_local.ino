@@ -86,7 +86,10 @@ void loop() {
             clientMsg = "";
             client.flush();
 
-            if (clientMsg.substring(6,14) == String("opendoor")) {
+            char charMsg[9];
+            clientMsg.toCharArray(charMsg, 8);
+
+            if (strcmp(charMsg, "opendoor") == 0) {
                 // open door
                 asyncOpenDoor = true;
                 client.println("HTTP/1.1 200 OK");
