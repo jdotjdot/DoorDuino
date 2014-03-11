@@ -84,7 +84,7 @@ void loop() {
             // struct clientInput parsedInput = parseClientInput(clientMsg);
 
             char charMsg[9];
-            clientMsg.toCharArray(charMsg, 8);
+            clientMsg.substring(6, 14).toCharArray(charMsg, 8);
 
             clientMsg = "";
             client.flush();
