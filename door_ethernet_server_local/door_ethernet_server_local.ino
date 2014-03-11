@@ -83,11 +83,13 @@ void loop() {
 
             // struct clientInput parsedInput = parseClientInput(clientMsg);
 
+            char charMsg[9];
+            clientMsg.toCharArray(charMsg, 8);
+
             clientMsg = "";
             client.flush();
 
-            char charMsg[9];
-            clientMsg.toCharArray(charMsg, 8);
+            Serial.println(charMsg);
 
             if (strcmp(charMsg, "opendoor") == 0) {
                 // open door
