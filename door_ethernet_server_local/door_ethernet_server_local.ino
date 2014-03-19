@@ -40,7 +40,7 @@ void setup() {
 
 void openDoor() {
     digitalWrite(doorPin, HIGH);
-    delay(15000);
+    delay(10000);
     digitalWrite(doorPin, LOW);
 }
 
