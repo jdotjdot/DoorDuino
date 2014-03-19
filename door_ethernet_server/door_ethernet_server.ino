@@ -19,6 +19,7 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 #include "sha256.h"
+#include "password2.h"
 
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
@@ -29,7 +30,7 @@ IPAddress ip(10, 0, 3, 240);
 
 int doorPin = 9;
 
-String password = "tuehnoschhrs189072398nthna";
+String password = PASSWORD;  // PASSWORD defined in a header file
 unsigned long currentTime = 0; // request index for verification - time is misnomer
 
 String clientMsg = "";
@@ -86,12 +87,12 @@ struct clientInput parseClientInput(String command) {
                 (unsigned long) piece3;
 
   holder.hash_s = command.substring(16, 80);
-  Serial.println(holder.time_s);
-  Serial.println(holder.time);
-  Serial.println(holder.hash_s);
+  //Serial.println(holder.time_s);
+  //Serial.println(holder.time);
+  //Serial.println(holder.hash_s);
 
   command.substring(16, 80).toCharArray(holder.hash, 65);
-  Serial.println(holder.hash);
+  //Serial.println(holder.hash);
   Serial.println(String("Available memory: ") + availableMemory());
   return holder;
 
@@ -144,6 +145,9 @@ void loop() {
 
           clientMsg = "";
           client.flush();
+          
+          //Serial.println(parsedInput.time);
+          //Serial.println(currentTime);
 
           // Check valid time
           if (parsedInput.time <= currentTime) {
