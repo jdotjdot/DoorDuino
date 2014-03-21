@@ -17,4 +17,5 @@ To set up your DoorDuino microcontoller, you'll need the following:
     * Transistor (those that came with the Arduino will do)
     * Alligator clips (most likely)
 
+The schematic of the circuit can be seen below:
 ![Diagram](schematic.png)
