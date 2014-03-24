@@ -6,6 +6,7 @@ DoorDuino is an Arduino equipped with an [Ethernet Shield](http://arduino.cc/en/
 To set up your DoorDuino microcontoller, you'll need the following:
 
 + an Arduino
++ an Arduino ethernet shield (alternatively, you might be able to use the Arduino Yún)
 + the Arduino sketch files (code), which includes:
     * A modified verison of the `Sha` library, included in this repo
     * The sketch `door_ethernet_server.ino` if you plan to use a hashed secure password to communicate with the Doorbot, or `door_ethernet_server_local.ino` if not
